@@ -7,7 +7,6 @@ class SqliteInterface():
         connection = None
         try:
             connection = sqlite3.connect(path)
-            print("Connection to SQLite database successful")
         except sqlite3.Error as e:
             print(f"Error '{e}' occurred")
 
@@ -19,7 +18,6 @@ class SqliteInterface():
         try:
             cursor.execute(query)
             connection.commit()
-            print("Query executed successfully")
         except sqlite3.Error as e:
             print(f"Error '{e}' occurred")
 

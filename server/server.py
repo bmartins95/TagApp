@@ -1,6 +1,6 @@
 import os
 
-from sqlite import SqliteInterface as sql
+from .sqlite import SqliteInterface as sql
 
 class Server():
     def __init__(self, path):
@@ -14,6 +14,13 @@ class Server():
         result = sql.executeAndReadQuery(self.connection, query)
         return result
 
+    def getLinesFromList(self, listId):
+        query = f"""
+            SELECT tag, type, signal, pid, version 
+            FROM lines WHERE list_id == {listId};
+        """
+        result = sql.executeAndReadQuery(self.connection, query)
+        return result
 
     def addProject(self, name, description="NULL"):
         query = f"""
@@ -22,17 +29,18 @@ class Server():
         """
         sql.executeQuery(self.connection, query)
 
-    def addList(self, name, project_id):
+    def addList(self, name, projectId):
         query = f"""
             INSERT INTO lists (name, project_id)
-            VALUES ('{name}', {project_id});
+            VALUES ('{name}', {projectId});
         """
         sql.executeQuery(self.connection, query)
 
-    def addLine(self, tag, type, signal, pid, version, list_id):
+    def addLine(self, tag, type, signal, pid, version, listId):
         query = f"""
             INSERT INTO lines (tag, type, signal, pid, version, list_id)
-            VALUES ('{tag}', '{type}', '{signal}', '{pid}', {version}, {list_id});
+            VALUES ('{tag}', '{type}', '{signal}', 
+            '{pid}', {version}, {listId});
         """
         return sql.executeQuery(self.connection, query)
 
@@ -94,15 +102,10 @@ if __name__ == '__main__':
     server.addLine("AF5GG", "Causa", "Analógico", "Falha na válvula", 5, 2)
     server.addLine("AKJJ7", "Causa", "Digital", "Falha", 4, 2)
     
-    for project in server.getTable("projects"):
-        print(project)
-    print()
-
-    for list in server.getTable("lists"):
-        print(list)
-    print()
-
-    for line in server.getTable("lines"):
+    myList = server.getLinesFromList(1)
+    
+    for line in myList:
         print(line)
 
-    os.remove(path)
+    print(len(myList))
+    print(len(myList[0]) + 1)
