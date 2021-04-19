@@ -14,13 +14,41 @@ class Server():
         result = sql.executeAndReadQuery(self.connection, query)
         return result
 
+    def getTableHeaders(self, name):
+        query = f"SELECT * FROM '{name}';"
+        result = sql.executeAndGetHeaders(self.connection, query)
+        return result
+
+    def getListsFromProject(self, projectId):
+        query = f"SELECT name FROM lists WHERE projectId = {projectId};"
+        result = sql.executeAndReadQuery(self.connection, query)
+        return result
+    
+    def getListIdFromProject(self, name, projectId):
+        query = f"""
+            SELECT id FROM lists 
+            WHERE projectId = {projectId} AND name = '{name}';
+        """
+        result = sql.executeAndReadQuery(self.connection, query)
+        return result[0][0]
+    
+    def getListName(self, id):
+        query = f"SELECT name FROM lists WHERE id = {id};"
+        result = sql.executeAndReadQuery(self.connection, query)
+        return result[0][0]
+    
     def getLinesFromList(self, listId):
         query = f"""
             SELECT tag, type, signal, pid, version 
-            FROM lines WHERE list_id == {listId};
+            FROM lines WHERE listId == {listId};
         """
         result = sql.executeAndReadQuery(self.connection, query)
         return result
+
+    def getProjectName(self, projectId):
+        query = f"SELECT name FROM projects WHERE id = {projectId}"
+        result = sql.executeAndReadQuery(self.connection, query)
+        return result[0][0]
 
     def addProject(self, name, description="NULL"):
         query = f"""
@@ -31,14 +59,14 @@ class Server():
 
     def addList(self, name, projectId):
         query = f"""
-            INSERT INTO lists (name, project_id)
+            INSERT INTO lists (name, projectId)
             VALUES ('{name}', {projectId});
         """
         sql.executeQuery(self.connection, query)
 
     def addLine(self, tag, type, signal, pid, version, listId):
         query = f"""
-            INSERT INTO lines (tag, type, signal, pid, version, list_id)
+            INSERT INTO lines (tag, type, signal, pid, version, listId)
             VALUES ('{tag}', '{type}', '{signal}', 
             '{pid}', {version}, {listId});
         """
@@ -50,7 +78,7 @@ class Server():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL UNIQUE,
                 description TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """
         sql.executeQuery(self.connection, query)
@@ -59,10 +87,10 @@ class Server():
         query = """ 
             CREATE TABLE IF NOT EXISTS lists (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL UNIQUE,
-                project_id INTEGER NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(project_id) REFERENCES projects(id)
+                name TEXT NOT NULL,
+                projectId INTEGER NOT NULL,
+                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(projectId) REFERENCES projects(id)
             );
         """
         sql.executeQuery(self.connection, query)
@@ -77,9 +105,9 @@ class Server():
                 signal TEXT,
                 pid TEXT,
                 version INTEGER,
-                list_id INTEGER,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(list_id) REFERENCES lists(id)
+                listId INTEGER,
+                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(listId) REFERENCES lists(id)
             );
         """
         sql.executeQuery(self.connection, query)
@@ -88,24 +116,16 @@ class Server():
 if __name__ == '__main__':
     path = "./database/teste.db"
     server = Server(path)
-    server.addProject("Project 1")
-    server.addList("List 1", 1)
+    server.addProject("Projeto 1")
+    server.addList("Lista 1", 1)
     server.addLine("AHH3DF", "Causa", "Analógico", "Pressão alta H", 1, 1)
     server.addLine("ASGG4", "Causa", "Digital", "Pressão baixa L", 2, 1)
     server.addLine("ADH33", "Causa", "Analógico", "Pressão alta H", 1, 1)
     server.addLine("AF5GG", "Causa", "Analógico", "Falha na válvula", 5, 1)
     server.addLine("AKJJ7", "Causa", "Digital", "Falha", 4, 1)
-    server.addList("List 2", 1)
-    server.addLine("AHH3DF", "Causa", "Analógico", "Pressão alta H", 1, 2)
-    server.addLine("ASGG4", "Causa", "Digital", "Pressão baixa L", 2, 2)
-    server.addLine("ADH33", "Causa", "Analógico", "Pressão alta H", 1, 2)
-    server.addLine("AF5GG", "Causa", "Analógico", "Falha na válvula", 5, 2)
-    server.addLine("AKJJ7", "Causa", "Digital", "Falha", 4, 2)
-    
-    myList = server.getLinesFromList(1)
-    
-    for line in myList:
-        print(line)
-
-    print(len(myList))
-    print(len(myList[0]) + 1)
+    server.addList("Lista 2", 1)
+    server.addLine("ADA33", "Causa", "Analógico", "Pressão alta H", 3, 2)
+    server.addLine("131DD", "Efeito", "Digital", "Redução da pressão", 3, 2)
+    server.addLine("ADHH4", "Causa", "Analógico", "Pressão alta H", 3, 2)
+    server.addLine("HUJU7", "Causa", "Analógico", "Falha na válvula", 3, 2)
+    server.addLine("FFF44F", "Efeito", "Digital", "Falha", 3, 2)
