@@ -1,21 +1,18 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QAction
-from PyQt5.QtWidgets import QDialogButtonBox
 from PyQt5.QtCore import QRegExp
 from PyQt5.QtGui import QIcon
 from PyQt5.QtGui import QRegExpValidator
 
+from interface.shortcuts.dialog import MyDialog
 from server.server import Server
 
-class CreateProjectDialog(QtWidgets.QDialog):
+class CreateProjectDialog(MyDialog):
     def __init__(self):
         super(CreateProjectDialog, self).__init__()
         self.setWindowTitle("Criar Projeto")
         self.setGeometry(100, 100, 300, 50)
-        self.createForm()
-        self.createButtonBox()
-        self.setMainLayout()     
-        self.moveToCenter()   
+        self.moveToCenter()
         
     def createForm(self):
         self.name = QtWidgets.QLineEdit()
@@ -32,24 +29,6 @@ class CreateProjectDialog(QtWidgets.QDialog):
         layout.addRow(QtWidgets.QLabel("Descrição"), self.description)
         self.formGroupBox = QtWidgets.QGroupBox("")
         self.formGroupBox.setLayout(layout)
-    
-    def createButtonBox(self):
-        buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
-        self.buttonBox = QDialogButtonBox(buttons)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-
-    def setMainLayout(self):
-        mainLayout = QtWidgets.QVBoxLayout()
-        mainLayout.addWidget(self.formGroupBox)
-        mainLayout.addWidget(self.buttonBox)
-        self.setLayout(mainLayout)
-
-    def moveToCenter(self):
-        centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
-        frame = self.frameGeometry()
-        frame.moveCenter(centerPoint)
-        self.move(frame.topLeft())
 
     def accept(self):
         isNameEmpty = self.name.text().isspace() or not self.name.text()
@@ -73,6 +52,32 @@ class CreateProjectDialog(QtWidgets.QDialog):
         projects = [project[1] for project in server.getTable("projects")]
         return self.name.text() not in projects
 
+class OpenProjectDialog(MyDialog):
+    def __init__(self, openProject):
+        super(OpenProjectDialog, self).__init__()
+        self.openProject = openProject
+        self.setWindowTitle("Abrir Projeto")
+        self.setGeometry(100, 100, 300, 50)
+        self.moveToCenter()
+        
+    def createProjectDict(self):
+        server = Server()
+        table = server.getTable("projects")
+        self.projectIds = [project[0] for project in table]
+        self.projectNames = [project[1] for project in table]
+        self.projectDict = dict(zip(self.projectNames, self.projectIds))
+    
+    def createForm(self):
+        self.projectBox = QtWidgets.QComboBox()
+        self.projectBox.addItems(self.projectNames)
+        layout = QtWidgets.QFormLayout()
+        layout.addRow(QtWidgets.QLabel("Projeto"), self.projectBox)
+        self.formGroupBox = QtWidgets.QGroupBox("")
+        self.formGroupBox.setLayout(layout)
+
+    def accept(self):
+        self.close()
+        self.openProject(self.projectDict[self.projectBox.currentText()])
 
 class CreateProjectAction(QAction):
     def __init__(self, parent):
@@ -80,11 +85,25 @@ class CreateProjectAction(QAction):
             QIcon("./interface/shortcuts/icons/create_project.png"), 
             "Criar projeto",
             parent)
-        self.setShortcut('Ctrl+N')
+        self.setShortcut('Ctrl+P')
         self.triggered.connect(self.createProject)
 
     def createProject(self):
         dialog = CreateProjectDialog()
+        dialog.exec_()
+
+class OpenProjectAction(QAction):
+    def __init__(self, parent):
+        super(OpenProjectAction, self).__init__( 
+            QIcon("./interface/shortcuts/icons/open_project.png"), 
+            "Abrir projeto",
+            parent)
+        self.parent = parent
+        self.setShortcut('Ctrl+O')
+        self.triggered.connect(self.openProject)
+
+    def openProject(self):
+        dialog = OpenProjectDialog(self.parent.openProject)
         dialog.exec_()
 
 

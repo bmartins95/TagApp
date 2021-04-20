@@ -4,6 +4,7 @@ from PyQt5 import QtGui
 from .tab import Tab
 from .tree import ProjectTree
 from .table import TagTable
+from .shortcuts.project import OpenProjectAction
 from .shortcuts.project import CreateProjectAction
 from .shortcuts.list import CreateListAction
 
@@ -38,6 +39,7 @@ class MainWindow(QtWidgets.QMainWindow):
     
     def createToolBar(self):
         self.toolbar = self.addToolBar('Atalhos')
+        self.toolbar.addAction(OpenProjectAction(self))
         self.toolbar.addAction(CreateProjectAction(self))
         self.toolbar.addAction(CreateListAction(self, self.tree.updateTree))
     
@@ -49,8 +51,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.tabs.addTab(tableWidget, tableName)
     
     def openProject(self, projectId):
-        self.tree.addTree(projectId)
-        self.tree.addBranches(projectId)
-        self.tree.setOpenListFunction(self.openList)
-        
-        
+        if projectId not in self.tree.projectIds.values():
+            self.tree.addTree(projectId)
+            self.tree.addBranches(projectId)
+            self.tree.setOpenListFunction(self.openList)        

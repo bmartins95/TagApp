@@ -74,14 +74,11 @@ class CreateListDialog(QtWidgets.QDialog):
             server.addLine("", "", "", "", "NULL", listId)
 
             self.updateTree(self.projectBox.currentText())
-            self.close()
         elif isNameEmpty:
-            self.close()
             error = QtWidgets.QErrorMessage()
             error.showMessage("O campo nome é obrigatório!")
             error.exec_()
         elif isNameUsed:
-            self.close()
             error = QtWidgets.QErrorMessage()
             error.showMessage("Este nome já está sendo utilizado!")
             error.exec_()
@@ -92,7 +89,6 @@ class CreateListDialog(QtWidgets.QDialog):
         projectId = self.projectDict[self.projectBox.currentText()]
         id = server.getListIdFromProject(listName, projectId)
         return id > 0
-    
 
 
 class CreateListAction(QAction):
@@ -101,11 +97,12 @@ class CreateListAction(QAction):
             QIcon("./interface/shortcuts/icons/create_list.png"), 
             "Criar lista",
             parent)
-        self.dialog = CreateListDialog(updateTree)
+        self.updateTree = updateTree
         self.triggered.connect(self.createList)
 
     def createList(self):
-        self.dialog.exec_()
+        dialog = CreateListDialog(self.updateTree)
+        dialog.exec_()
 
 
     
