@@ -14,7 +14,4 @@ if __name__ == '__main__':
     win.openProject(1)
     win.show()
 
-    server = Server()
-    print(server.getTable("projects"))
-
     sys.exit(app.exec_())

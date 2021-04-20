@@ -1,9 +1,9 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QRegExp
-from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtWidgets import QAction
 from PyQt5.QtWidgets import QDialogButtonBox
+from PyQt5.QtCore import QRegExp
 from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QRegExpValidator
 
 from server.server import Server
 
@@ -36,7 +36,7 @@ class CreateProjectDialog(QtWidgets.QDialog):
     def createButtonBox(self):
         buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
         self.buttonBox = QDialogButtonBox(buttons)
-        self.buttonBox.accepted.connect(self.getInfo)
+        self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 
     def setMainLayout(self):
@@ -51,7 +51,7 @@ class CreateProjectDialog(QtWidgets.QDialog):
         frame.moveCenter(centerPoint)
         self.move(frame.topLeft())
 
-    def getInfo(self):
+    def accept(self):
         isNameEmpty = self.name.text().isspace() or not self.name.text()
         if self.checkProjectExist() and not isNameEmpty:
             server = Server()

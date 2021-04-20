@@ -12,7 +12,8 @@ class ProjectTree(QTreeWidget):
         self.setHeaderHidden(True)
         self.setColumnCount(1)
         self.projectIds = {}
-        self.trees = []
+        self.listsOpen = {}
+        self.trees = {}
 
         self.itemDoubleClicked.connect(self.onItemDoubleClicked)
 
@@ -20,16 +21,18 @@ class ProjectTree(QTreeWidget):
         server = Server()
         name = server.getProjectName(id)
         self.projectIds[name] = id
-        self.trees.append(QtWidgets.QTreeWidgetItem([name]))
-        self.addTopLevelItem(self.trees[-1])
+        self.trees[name] = QtWidgets.QTreeWidgetItem([name])
+        self.addTopLevelItem(self.trees[name])
     
     def addBranches(self, id):
         server = Server()
+        name = server.getProjectName(id)
         branches = server.getListsFromProject(id)
+        self.listsOpen[name] = branches
         for branch in branches:
             item = QtWidgets.QTreeWidgetItem(branch)
-            self.trees[-1].addChild(item)
-        self.trees[-1].setExpanded(True)
+            self.trees[name].addChild(item)
+        self.trees[name].setExpanded(True)
 
     def onItemDoubleClicked(self, it, col):
         if it.parent() is not None:
@@ -41,3 +44,27 @@ class ProjectTree(QTreeWidget):
  
     def setOpenListFunction(self, func):
         self.openList = func
+
+    def updateTree(self, projectName):
+        isProjectOpen = projectName in self.projectIds.keys()
+        isTreeUpdated = self.isTreeUpdated(projectName)
+        if isProjectOpen and not isTreeUpdated:
+            server = Server()
+            dbList = server.getListsFromProject(self.projectIds[projectName])
+            openSet = set(self.listsOpen[projectName])
+            toUpdate = [item for item in dbList if item not in openSet]
+            for value in toUpdate:
+                item = QtWidgets.QTreeWidgetItem(value)
+                self.trees[projectName].addChild(item)
+            
+    def isTreeUpdated(self, projectName):
+        server = Server()
+        dbList = server.getListsFromProject(self.projectIds[projectName])
+        
+        if len(self.listsOpen[projectName]) != len(dbList):
+            return False
+        else:
+            return sorted(self.listsOpen[projectName]) == sorted(dbList)
+
+
+
