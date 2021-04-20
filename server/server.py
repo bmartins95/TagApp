@@ -3,7 +3,7 @@ import os
 from .sqlite import SqliteInterface as sql
 
 class Server():
-    def __init__(self, path):
+    def __init__(self, path="./server/database/teste.db"):
         self.connection = sql.createConnection(path)
         self.createProjectsTable()
         self.createListsTable()
@@ -53,7 +53,7 @@ class Server():
     def addProject(self, name, description="NULL"):
         query = f"""
             INSERT INTO projects (name, description)
-            VALUES ('{name}', {description});
+            VALUES ('{name}', '{description}');
         """
         sql.executeQuery(self.connection, query)
 

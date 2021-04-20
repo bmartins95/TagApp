@@ -15,7 +15,7 @@ class TagTable(QTableWidget):
         self.resizeWidth()
     
     def loadTableFromServer(self):
-        server = Server("./server/database/teste.db")
+        server = Server()
         self.table = server.getLinesFromList(self.id)
 
     def setValues(self):
@@ -45,5 +45,5 @@ class TagTable(QTableWidget):
             self.setColumnWidth(i, round(sectionSizes[i]*1.2))
 
     def getTableName(self):
-        server = Server("./server/database/teste.db")
+        server = Server()
         return server.getListName(self.id)
