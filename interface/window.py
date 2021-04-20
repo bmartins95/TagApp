@@ -1,8 +1,10 @@
 from PyQt5 import QtWidgets
+from PyQt5 import QtGui
 
 from .tab import Tab
 from .tree import ProjectTree
 from .table import TagTable
+from .shortcuts.project import CreateProjectAction
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, QApplication):
@@ -10,6 +12,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setResolution(QApplication)
         self.setWindowTitle("PyQt5 Teste")
         self.showMaximized()
+        self.createToolBar()
         self.createCentralWidget()
 
     def setResolution(self, QApplication):
@@ -24,11 +27,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
         centralWidget = QtWidgets.QWidget()
         layout = QtWidgets.QHBoxLayout()
+        layout.setSpacing(25)
+        layout.setContentsMargins(20, 20, 20, 20)
         layout.addWidget(self.tree)
         layout.addWidget(self.tabs, 2)
         centralWidget.setLayout(layout)
         
         self.setCentralWidget(centralWidget)
+    
+    def createToolBar(self):
+        self.toolbar = self.addToolBar('Atalhos')
+        self.toolbar.addAction(CreateProjectAction(self))
     
     def openList(self, listId):        
         if (listId not in self.tabs.openListIds):
