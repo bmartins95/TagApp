@@ -4,6 +4,7 @@ from PyQt5 import QtGui
 from .tab import Tab
 from .tree import ProjectTree
 from .table import TagTable
+from .menu_bar import MenuBar
 from .shortcuts.project import OpenProjectAction
 from .shortcuts.project import CreateProjectAction
 from .shortcuts.list import CreateListAction
@@ -14,10 +15,11 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, QApplication):
         super(MainWindow, self).__init__()
         self.setResolution(QApplication)
-        self.setWindowTitle("PyQt5 Teste")
+        self.setWindowTitle("TAGApp")
         self.showMaximized()
         self.createCentralWidget()
         self.createToolBar()
+        self.createMenuBar()
 
     def setResolution(self, QApplication):
         screenResolution = QApplication.desktop().screenGeometry()
@@ -47,6 +49,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.toolbar.addAction(SaveListAction(self, self.tabs.saveList))
         self.toolbar.addAction(SaveAllListsAction(self, self.tabs.saveAllLists))
     
+    def createMenuBar(self):
+        menu = MenuBar(self)    
+        self.setMenuBar(menu)
+    
     def openList(self, listId):        
         if (listId not in self.tabs.openListIds):
             self.tabs.openListIds.append(listId)
@@ -58,4 +64,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if projectId not in self.tree.projectIds.values():
             self.tree.addTree(projectId)
             self.tree.addBranches(projectId)
-            self.tree.setOpenListFunction(self.openList)        
+            self.tree.setOpenListFunction(self.openList)
+
+    def closeProject(self, projectId):
+        self.tree.removeBranches(projectId)
+        self.tree.removeTree(projectId)       

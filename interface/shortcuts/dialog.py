@@ -23,8 +23,8 @@ class MyDialog(QDialog):
     
     def createForm(self):
         layout = QtWidgets.QFormLayout()
-        self.formGroupBox = QtWidgets.QGroupBox("")
-        self.formGroupBox.setLayout(layout)
+        self.formLayout = QtWidgets.QWidget()
+        self.formLayout.setLayout(layout)
     
     def createButtonBox(self):
         buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
@@ -34,7 +34,7 @@ class MyDialog(QDialog):
 
     def setMainLayout(self):
         mainLayout = QtWidgets.QVBoxLayout()
-        mainLayout.addWidget(self.formGroupBox)
+        mainLayout.addWidget(self.formLayout)
         mainLayout.addWidget(self.buttonBox)
         self.setLayout(mainLayout)
 

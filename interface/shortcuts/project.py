@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QAction
 from PyQt5.QtCore import QRegExp
 from PyQt5.QtGui import QIcon
 from PyQt5.QtGui import QRegExpValidator
+from PyQt5.QtGui import QKeySequence
 
 from .dialog import MyDialog
 from server.server import Server
@@ -27,8 +28,8 @@ class CreateProjectDialog(MyDialog):
         layout = QtWidgets.QFormLayout()
         layout.addRow(QtWidgets.QLabel("Nome"), self.name)
         layout.addRow(QtWidgets.QLabel("Descrição"), self.description)
-        self.formGroupBox = QtWidgets.QGroupBox("")
-        self.formGroupBox.setLayout(layout)
+        self.formLayout = QtWidgets.QWidget()
+        self.formLayout.setLayout(layout)
 
     def accept(self):
         isNameEmpty = self.name.text().isspace() or not self.name.text()
@@ -66,20 +67,43 @@ class OpenProjectDialog(MyDialog):
         
         layout = QtWidgets.QFormLayout()
         layout.addRow(QtWidgets.QLabel("Projeto"), self.projectBox)
-        self.formGroupBox = QtWidgets.QGroupBox("")
-        self.formGroupBox.setLayout(layout)
+        self.formLayout = QtWidgets.QWidget()
+        self.formLayout.setLayout(layout)
 
     def accept(self):
         self.close()
         self.openProject(self.projectDict[self.projectBox.currentText()])
 
+class CloseProjectDialog(MyDialog):
+    def __init__(self, closeProject, getOpenProjectNames):
+        self.closeProject = closeProject
+        self.getOpenProjectNames = getOpenProjectNames
+        super(CloseProjectDialog, self).__init__()
+        self.setWindowTitle("Fechar Projeto")
+        self.setGeometry(100, 100, 300, 50)
+        self.moveToCenter()
+    
+    def createForm(self):
+        self.projectBox = QtWidgets.QComboBox()
+        self.projectBox.addItems(self.getOpenProjectNames())
+        
+        layout = QtWidgets.QFormLayout()
+        layout.addRow(QtWidgets.QLabel("Projeto"), self.projectBox)
+        self.formLayout = QtWidgets.QWidget()
+        self.formLayout.setLayout(layout)
+
+    def accept(self):
+        self.close()
+        isEmpty = not self.projectBox.currentText() 
+        if not isEmpty:
+            self.closeProject(self.projectDict[self.projectBox.currentText()])
+
 class CreateProjectAction(QAction):
-    def __init__(self, parent):
+    def __init__(self, parent, name="Criar projeto"):
         super(CreateProjectAction, self).__init__( 
             QIcon("./interface/shortcuts/icons/create_project.png"), 
-            "Criar projeto",
+            name,
             parent)
-        self.setShortcut('Ctrl+P')
         self.triggered.connect(self.createProject)
 
     def createProject(self):
@@ -87,17 +111,32 @@ class CreateProjectAction(QAction):
         dialog.exec_()
 
 class OpenProjectAction(QAction):
-    def __init__(self, parent):
+    def __init__(self, parent, name="Abrir projeto"):
         super(OpenProjectAction, self).__init__( 
             QIcon("./interface/shortcuts/icons/open_project.png"), 
-            "Abrir projeto",
+            name,
             parent)
         self.parent = parent
-        self.setShortcut('Ctrl+O')
         self.triggered.connect(self.openProject)
 
     def openProject(self):
         dialog = OpenProjectDialog(self.parent.openProject)
+        dialog.exec_()
+
+class CloseProjectAction(QAction):
+    def __init__(self, parent, getOpenProjectNames, name="Fecha projeto"):
+        super(CloseProjectAction, self).__init__( 
+            QIcon(""), 
+            name,
+            parent)
+        self.getOpenProjectNames = getOpenProjectNames
+        self.parent = parent
+        self.setShortcut(QKeySequence('Ctrl+X'))
+        self.triggered.connect(self.closeProject)
+
+    def closeProject(self):
+        dialog = CloseProjectDialog(self.parent.closeProject, 
+            self.getOpenProjectNames)
         dialog.exec_()
 
 

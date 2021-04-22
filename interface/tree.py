@@ -1,6 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QTreeWidget
+import sip
 
 from server.server import Server
 
@@ -21,7 +22,7 @@ class ProjectTree(QTreeWidget):
         self.projectIds[name] = id
         self.trees[name] = QtWidgets.QTreeWidgetItem([name])
         self.addTopLevelItem(self.trees[name])
-    
+
     def addBranches(self, id):
         server = Server()
         name = server.getProjectName(id)
@@ -31,6 +32,20 @@ class ProjectTree(QTreeWidget):
             item = QtWidgets.QTreeWidgetItem(branch)
             self.trees[name].addChild(item)
         self.trees[name].setExpanded(True)
+
+    def removeTree(self, id):
+        for key in self.projectIds:
+            if self.projectIds[key] == id:
+                del self.projectIds[key]
+                sip.delete(self.trees[key])
+                del self.trees[key]
+                break
+
+    def removeBranches(self, id):
+        for key in self.projectIds:
+            if self.projectIds[key] == id:
+                del self.listsOpen[key]
+                break
 
     def onItemDoubleClicked(self, it, col):
         if it.parent() is not None:
@@ -42,6 +57,9 @@ class ProjectTree(QTreeWidget):
  
     def setOpenListFunction(self, func):
         self.openList = func
+
+    def getOpenProjectNames(self):
+        return self.projectIds.keys()
 
     def updateTree(self, projectName):
         isProjectOpen = projectName in self.projectIds.keys()

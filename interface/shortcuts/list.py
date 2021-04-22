@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import QAction
 from PyQt5.QtCore import QRegExp
 from PyQt5.QtGui import QIcon
 from PyQt5.QtGui import QRegExpValidator
+from PyQt5.QtGui import QKeySequence
+
 
 from server.server import Server
 from .dialog import MyDialog
@@ -28,8 +30,8 @@ class CreateListDialog(MyDialog):
         layout = QtWidgets.QFormLayout()
         layout.addRow(QtWidgets.QLabel("Selecione o projeto:"), self.projectBox)
         layout.addRow(QtWidgets.QLabel("Nome da lista:"), self.name)
-        self.formGroupBox = QtWidgets.QGroupBox("")
-        self.formGroupBox.setLayout(layout)
+        self.formLayout = QtWidgets.QWidget()
+        self.formLayout.setLayout(layout)
 
     def accept(self):
         self.close()
@@ -76,18 +78,19 @@ class CreateListAction(QAction):
         dialog.exec_()
 
 class SaveListAction(QAction):
-    def __init__(self, parent, saveList):
+    def __init__(self, parent, saveList, name="Salvar lista"):
         super(SaveListAction, self).__init__( 
             QIcon("./interface/shortcuts/icons/save_list.png"), 
-            "Salvar lista",
+            name,
             parent)
+        self.setShortcut(QKeySequence('Ctrl+S'))
         self.triggered.connect(saveList)
 
 class SaveAllListsAction(QAction):
-    def __init__(self, parent, saveAllLists):
+    def __init__(self, parent, saveAllLists, name="Salvar todas as listas"):
         super(SaveAllListsAction, self).__init__( 
             QIcon("./interface/shortcuts/icons/save_all.png"), 
-            "Salvar todas as listas",
+            name,
             parent)
         self.triggered.connect(saveAllLists)
 
