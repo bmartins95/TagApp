@@ -7,6 +7,8 @@ from .table import TagTable
 from .shortcuts.project import OpenProjectAction
 from .shortcuts.project import CreateProjectAction
 from .shortcuts.list import CreateListAction
+from .shortcuts.list import SaveListAction
+from .shortcuts.list import SaveAllListsAction
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, QApplication):
@@ -42,6 +44,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.toolbar.addAction(OpenProjectAction(self))
         self.toolbar.addAction(CreateProjectAction(self))
         self.toolbar.addAction(CreateListAction(self, self.tree.updateTree))
+        self.toolbar.addAction(SaveListAction(self, self.tabs.saveList))
+        self.toolbar.addAction(SaveAllListsAction(self, self.tabs.saveAllLists))
     
     def openList(self, listId):        
         if (listId not in self.tabs.openListIds):

@@ -1,30 +1,19 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QAction
-from PyQt5.QtWidgets import QDialogButtonBox
 from PyQt5.QtCore import QRegExp
 from PyQt5.QtGui import QIcon
 from PyQt5.QtGui import QRegExpValidator
 
 from server.server import Server
+from .dialog import MyDialog
 
-class CreateListDialog(QtWidgets.QDialog):
+class CreateListDialog(MyDialog):
     def __init__(self, updateTree):
         super(CreateListDialog, self).__init__()
         self.updateTree = updateTree
         self.setWindowTitle("Criar Lista")
-        self.setGeometry(100, 100, 300, 50)
-        self.buildProjectDict()
-        self.createForm()
-        self.createButtonBox()
-        self.setMainLayout()     
+        self.setGeometry(100, 100, 400, 80)
         self.moveToCenter()   
-        
-    def buildProjectDict(self):
-        server = Server()
-        table = server.getTable("projects")
-        self.projectIds = [project[0] for project in table]
-        self.projectNames = [project[1] for project in table]
-        self.projectDict = dict(zip(self.projectNames, self.projectIds))
     
     def createForm(self):
         self.projectBox = QtWidgets.QComboBox()
@@ -32,7 +21,7 @@ class CreateListDialog(QtWidgets.QDialog):
   
         self.name = QtWidgets.QLineEdit()
     
-        reg = QRegExp("[a-z-A-Z-0-9_ ]+")
+        reg = QRegExp("[a-zA-Z0-9\u00C0-\u00FF\s]+")
         validator = QRegExpValidator(reg, self.name)
         self.name.setValidator(validator)
 
@@ -41,24 +30,6 @@ class CreateListDialog(QtWidgets.QDialog):
         layout.addRow(QtWidgets.QLabel("Nome da lista:"), self.name)
         self.formGroupBox = QtWidgets.QGroupBox("")
         self.formGroupBox.setLayout(layout)
-    
-    def createButtonBox(self):
-        buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
-        self.buttonBox = QDialogButtonBox(buttons)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-
-    def setMainLayout(self):
-        mainLayout = QtWidgets.QVBoxLayout()
-        mainLayout.addWidget(self.formGroupBox)
-        mainLayout.addWidget(self.buttonBox)
-        self.setLayout(mainLayout)
-
-    def moveToCenter(self):
-        centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
-        frame = self.frameGeometry()
-        frame.moveCenter(centerPoint)
-        self.move(frame.topLeft())
 
     def accept(self):
         self.close()
@@ -103,6 +74,23 @@ class CreateListAction(QAction):
     def createList(self):
         dialog = CreateListDialog(self.updateTree)
         dialog.exec_()
+
+class SaveListAction(QAction):
+    def __init__(self, parent, saveList):
+        super(SaveListAction, self).__init__( 
+            QIcon("./interface/shortcuts/icons/save_list.png"), 
+            "Salvar lista",
+            parent)
+        self.triggered.connect(saveList)
+
+class SaveAllListsAction(QAction):
+    def __init__(self, parent, saveAllLists):
+        super(SaveAllListsAction, self).__init__( 
+            QIcon("./interface/shortcuts/icons/save_all.png"), 
+            "Salvar todas as listas",
+            parent)
+        self.triggered.connect(saveAllLists)
+
 
 
     

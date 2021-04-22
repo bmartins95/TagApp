@@ -4,7 +4,7 @@ from PyQt5.QtCore import QRegExp
 from PyQt5.QtGui import QIcon
 from PyQt5.QtGui import QRegExpValidator
 
-from interface.shortcuts.dialog import MyDialog
+from .dialog import MyDialog
 from server.server import Server
 
 class CreateProjectDialog(MyDialog):
@@ -18,7 +18,7 @@ class CreateProjectDialog(MyDialog):
         self.name = QtWidgets.QLineEdit()
         self.description = QtWidgets.QLineEdit()
 
-        reg = QRegExp("[a-z-A-Z-0-9_ ]+")
+        reg = QRegExp("[a-z-A-Z-0-9\u00C0-\u00FF\s]+")
         validator1 = QRegExpValidator(reg, self.name)
         validator2 = QRegExpValidator(reg, self.description)
         self.name.setValidator(validator1)
@@ -59,17 +59,11 @@ class OpenProjectDialog(MyDialog):
         self.setWindowTitle("Abrir Projeto")
         self.setGeometry(100, 100, 300, 50)
         self.moveToCenter()
-        
-    def createProjectDict(self):
-        server = Server()
-        table = server.getTable("projects")
-        self.projectIds = [project[0] for project in table]
-        self.projectNames = [project[1] for project in table]
-        self.projectDict = dict(zip(self.projectNames, self.projectIds))
     
     def createForm(self):
         self.projectBox = QtWidgets.QComboBox()
         self.projectBox.addItems(self.projectNames)
+        
         layout = QtWidgets.QFormLayout()
         layout.addRow(QtWidgets.QLabel("Projeto"), self.projectBox)
         self.formGroupBox = QtWidgets.QGroupBox("")

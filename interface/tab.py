@@ -23,3 +23,10 @@ class Tab(QTabWidget):
     def closeTab(self, index):
         self.openListIds.pop(index)
         self.removeTab(index)
+
+    def saveList(self):
+        self.currentWidget().save()
+
+    def saveAllLists(self):
+        for index in range(0, self.count()):
+            self.widget(index).save()

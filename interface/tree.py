@@ -25,7 +25,7 @@ class ProjectTree(QTreeWidget):
     def addBranches(self, id):
         server = Server()
         name = server.getProjectName(id)
-        branches = server.getListsFromProject(id)
+        branches = server.getListsNameFromProject(id)
         self.listsOpen[name] = branches
         for branch in branches:
             item = QtWidgets.QTreeWidgetItem(branch)
@@ -48,7 +48,7 @@ class ProjectTree(QTreeWidget):
         isTreeUpdated = self.isTreeUpdated(projectName)
         if isProjectOpen and not isTreeUpdated:
             server = Server()
-            dbList = server.getListsFromProject(self.projectIds[projectName])
+            dbList = server.getListsNameFromProject(self.projectIds[projectName])
             openSet = set(self.listsOpen[projectName])
             toUpdate = [item for item in dbList if item not in openSet]
             for value in toUpdate:
@@ -57,7 +57,7 @@ class ProjectTree(QTreeWidget):
             
     def isTreeUpdated(self, projectName):
         server = Server()
-        dbList = server.getListsFromProject(self.projectIds[projectName])
+        dbList = server.getListsNameFromProject(self.projectIds[projectName])
         
         if len(self.listsOpen[projectName]) != len(dbList):
             return False

@@ -2,6 +2,8 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtWidgets import QDialogButtonBox
 
+from server.server import Server
+
 class MyDialog(QDialog):
     def __init__(self):
         super(MyDialog, self).__init__()
@@ -13,7 +15,11 @@ class MyDialog(QDialog):
         self.setMainLayout()     
     
     def createProjectDict(self):
-        pass
+        server = Server()
+        table = server.getTable("projects")
+        self.projectIds = [project[0] for project in table]
+        self.projectNames = [project[1] for project in table]
+        self.projectDict = dict(zip(self.projectNames, self.projectIds))
     
     def createForm(self):
         layout = QtWidgets.QFormLayout()

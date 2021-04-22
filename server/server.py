@@ -19,7 +19,7 @@ class Server():
         result = sql.executeAndGetHeaders(self.connection, query)
         return result
 
-    def getListsFromProject(self, projectId):
+    def getListsNameFromProject(self, projectId):
         query = f"SELECT name FROM lists WHERE projectId = {projectId};"
         result = sql.executeAndReadQuery(self.connection, query)
         return result
@@ -43,7 +43,7 @@ class Server():
     
     def getLinesFromList(self, listId):
         query = f"""
-            SELECT tag, type, signal, pid, version 
+            SELECT id, tag, type, signal, pid, version 
             FROM lines WHERE listId == {listId};
         """
         result = sql.executeAndReadQuery(self.connection, query)
@@ -53,6 +53,15 @@ class Server():
         query = f"SELECT name FROM projects WHERE id = {projectId}"
         result = sql.executeAndReadQuery(self.connection, query)
         return result[0][0]
+
+    def updateLine(self, column, value, lineId):
+        value = f"'{value}'" if type(value) == str else value
+        query = f"""
+        UPDATE lines
+        SET {column} = {value}
+        WHERE id = {lineId};
+        """
+        sql.executeQuery(self.connection, query)
 
     def addProject(self, name, description="NULL"):
         query = f"""
