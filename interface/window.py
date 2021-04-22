@@ -1,15 +1,12 @@
-from PyQt5 import QtWidgets
-from PyQt5 import QtGui
+from PyQt5 import QtWidgets, QtGui
 
 from .tab import Tab
 from .tree import ProjectTree
 from .table import TagTable
-from .menu_bar import MenuBar
-from .shortcuts.project import OpenProjectAction
-from .shortcuts.project import CreateProjectAction
-from .shortcuts.list import CreateListAction
-from .shortcuts.list import SaveListAction
-from .shortcuts.list import SaveAllListsAction
+from .menu.menu import MenuBar
+from .shortcuts.project import OpenProjectAction, CreateProjectAction
+from .shortcuts.list import CreateListAction, SaveListAction, SaveAllListsAction
+
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, QApplication):
@@ -54,7 +51,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setMenuBar(menu)
     
     def openList(self, listId):        
-        if (listId not in self.tabs.openListIds):
+        if listId not in self.tabs.openListIds:
             self.tabs.openListIds.append(listId)
             tableWidget = TagTable(listId)
             tableName = tableWidget.getTableName()

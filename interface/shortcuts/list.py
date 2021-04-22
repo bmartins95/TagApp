@@ -5,7 +5,6 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtGui import QKeySequence
 
-
 from server.server import Server
 from .dialog import MyDialog
 
@@ -63,7 +62,6 @@ class CreateListDialog(MyDialog):
         id = server.getListIdFromProject(listName, projectId)
         return id > 0
 
-
 class CreateListAction(QAction):
     def __init__(self, parent, updateTree):
         super(CreateListAction, self).__init__( 
@@ -94,6 +92,10 @@ class SaveAllListsAction(QAction):
             parent)
         self.triggered.connect(saveAllLists)
 
-
-
-    
+class AddRowToListAction(QAction):
+    def __init__(self, parent, name="Adicionar linha"):
+        super(AddRowToListAction, self).__init__( 
+            QIcon("./interface/shortcuts/icons/add_row.png"), 
+            name,
+            parent)
+        self.triggered.connect(parent.addRow)

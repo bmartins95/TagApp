@@ -1,9 +1,10 @@
-from PyQt5 import QtWidgets
-from PyQt5 import QtCore
-from PyQt5.QtWidgets import QTreeWidget
 import sip
 
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtWidgets import QTreeWidget
+
 from server.server import Server
+
 
 class ProjectTree(QTreeWidget):
     def __init__(self):

@@ -1,11 +1,12 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QKeySequence
 
-from .shortcuts.project import OpenProjectAction
-from .shortcuts.project import CreateProjectAction
-from .shortcuts.project import CloseProjectAction
-from .shortcuts.list import SaveAllListsAction
-from .shortcuts.menu import OpenHelpDialogAction
+from interface.shortcuts.project import OpenProjectAction
+from interface.shortcuts.project import CreateProjectAction
+from interface.shortcuts.project import CloseProjectAction
+from interface.shortcuts.list import SaveAllListsAction
+from .help import OpenHelpDialogAction
+
 
 class MenuBar(QtWidgets.QMenuBar):
     def __init__(self, parent):
@@ -13,7 +14,7 @@ class MenuBar(QtWidgets.QMenuBar):
         arquivo = self.addMenu("Arquivo")
         ajuda = self.addMenu("Ajuda")
         
-        addProject = CreateProjectAction(parent, "Novo projeto")
+        addProject = CreateProjectAction(parent)
         openProject = OpenProjectAction(parent)
         saveProject = SaveAllListsAction(parent, parent.tabs.saveAllLists, "Salvar projeto")
         closeProject = CloseProjectAction(parent, parent.tree.getOpenProjectNames)
@@ -36,3 +37,4 @@ class MenuBar(QtWidgets.QMenuBar):
         creator = "Desenvolvido por: Bruno Martins"
         
         ajuda.addAction(OpenHelpDialogAction(parent, version, creator))
+

@@ -1,15 +1,14 @@
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog
-from PyQt5.QtWidgets import QAction
-from PyQt5.QtWidgets import QDialogButtonBox
+from PyQt5.QtWidgets import QDialog, QAction, QDialogButtonBox
 
 class HelpDialog(QDialog):
     def __init__(self, version, creator):
         super(HelpDialog, self).__init__()
         self.version = version
         self.creator = creator
+        
         self.setWindowTitle("Informações")
         self.createLabels()
         self.createButtonBox()
@@ -17,7 +16,7 @@ class HelpDialog(QDialog):
         self.moveToCenter()   
     
     def createLabels(self):
-        self.labelLayout = QtWidgets.QWidget()
+        self.labelWidget = QtWidgets.QWidget()
         
         layout = QtWidgets.QVBoxLayout()
         appName = QtWidgets.QLabel("TAGApp")
@@ -36,7 +35,7 @@ class HelpDialog(QDialog):
         boldFont.setBold(True)
         appName.setFont(boldFont)
         
-        self.labelLayout.setLayout(layout)
+        self.labelWidget.setLayout(layout)
     
     def createButtonBox(self):
         buttons = QDialogButtonBox.Ok
@@ -46,7 +45,7 @@ class HelpDialog(QDialog):
 
     def setMainLayout(self):
         mainLayout = QtWidgets.QVBoxLayout()
-        mainLayout.addWidget(self.labelLayout)
+        mainLayout.addWidget(self.labelWidget)
         mainLayout.addWidget(self.buttonBox)
         self.setLayout(mainLayout)
 
@@ -70,3 +69,4 @@ class OpenHelpDialogAction(QAction):
     def openHelpDialog(self):
         dialog = HelpDialog(self.version, self.creator)
         dialog.exec_()
+

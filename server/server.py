@@ -2,9 +2,11 @@ import os
 
 from server.sqlite import SqliteInterface as sql
 
+
 class Server():
     def __init__(self, path="./server/database/teste.db"):
         self.connection = sql.createConnection(path)
+        
         self.createProjectsTable()
         self.createListsTable()
         self.createLinesTable()

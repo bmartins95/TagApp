@@ -1,13 +1,14 @@
 from PyQt5.QtWidgets import QTabWidget
 
+
 class Tab(QTabWidget):
     def __init__(self):
         super(Tab, self).__init__()
         self.setTabsClosable(True)
         self.defineStyle()
         self.tabBar().setMovable(True)
+        
         self.openListIds = []
-
         self.tabCloseRequested.connect(self.closeTab)
 
     def defineStyle(self):
@@ -25,8 +26,10 @@ class Tab(QTabWidget):
         self.removeTab(index)
 
     def saveList(self):
-        self.currentWidget().save()
+        if self.currentWidget() is not None:
+            self.currentWidget().save()
 
     def saveAllLists(self):
         for index in range(0, self.count()):
             self.widget(index).save()
+

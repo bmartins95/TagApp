@@ -1,5 +1,6 @@
 from server.server import Server
 
+
 if __name__ == '__main__':
     path = "./server/database/teste.db"
     server = Server(path)
