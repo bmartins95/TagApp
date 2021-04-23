@@ -9,6 +9,10 @@ from .help import OpenHelpDialogAction
 
 
 class MenuBar(QtWidgets.QMenuBar):
+    """Creates a MenuBar with actions Arquivo and Ajuda and defines their 
+    actions. Also, this class defines the information shown in the Ajuda menu,
+    e.g. app version and creator name.
+    """
     def __init__(self, parent):
         super(MenuBar, self).__init__()
         arquivo = self.addMenu("Arquivo")

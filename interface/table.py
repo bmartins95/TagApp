@@ -8,7 +8,10 @@ from interface.shortcuts.list import AddRowToListAction
 
 
 class TagTableWidgetItem(QtWidgets.QTableWidgetItem):
-    def __init__(self, text, lineId):
+    """Adds a lineId attribute and sets the text to a empty string if the 
+    original text is None.
+    """
+    def __init__(self, text, lineId: int):
         super(TagTableWidgetItem, self).__init__(text)
         if text == "None":
             self.setText("")
@@ -16,10 +19,15 @@ class TagTableWidgetItem(QtWidgets.QTableWidgetItem):
 
 
 class IntItemDelegate(QtWidgets.QItemDelegate):
+    """An QItemDelegate child class that allows only numbers to be inserted in
+    the QLineEdit widget. This class is used in the version column of the 
+    TagTable to filter the data sended by the user.
+    """
     def __init__(self):
         super(IntItemDelegate, self).__init__()
     
-    def createEditor(self, parent, option, index):
+    def createEditor(self, parent, option, index) -> QtWidgets.QLineEdit:
+        """Allow only numbers in the QtWidgets.QLineEdit item."""
         lineEdit = QtWidgets.QLineEdit(parent)
         reg = QRegExp("[0-9]+")
         validator = QRegExpValidator(reg, lineEdit)
@@ -28,7 +36,11 @@ class IntItemDelegate(QtWidgets.QItemDelegate):
 
 
 class TagTable(QTableWidget):
-    def __init__(self, id):
+    """Loads all lines from the database lines table, where the id is the id 
+    from which the lines belong. Those lines are later stored in a QTableWidegt
+    object which can be later visualized in a Tab widget.
+    """
+    def __init__(self, id: int):
         super(TagTable, self).__init__()
         self.id = id
         self.wasChanged = False
@@ -46,6 +58,9 @@ class TagTable(QTableWidget):
         self.itemChanged.connect(self.onItemChanged)
     
     def loadTableFromServer(self):
+        """Loads the lines that belongs to the table with listId = id and stores
+        the information in the table variable.
+        """
         server = Server()
         self.table =  [list(line) for line in server.getLinesFromList(self.id)]
         for line in self.table:
@@ -53,6 +68,9 @@ class TagTable(QTableWidget):
             line.pop(0)
     
     def setValues(self):
+        """Sets the number of row and columns of the widget and inserts the 
+        values from table into the TagTable widget.
+        """
         nrow, ncolumn = len(self.table), len(self.table[0])
         self.setRowCount(nrow)
         self.setColumnCount(ncolumn)
@@ -63,10 +81,14 @@ class TagTable(QTableWidget):
                 self.setItem(i, j, item)
     
     def setHeaders(self):
+        """Sets default values for the widget headers."""
         labels = ["TAG", "Tipo", "Sinal", "PID", "Versão"]
         self.setHorizontalHeaderLabels(labels)
 
     def resizeWidth(self):
+        """Resizes the width of the columns to exactly fit the texts, later it
+        takes this resized width and increases it by 20 percent.
+        """
         header = self.horizontalHeader()
         header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         
@@ -79,6 +101,9 @@ class TagTable(QTableWidget):
             self.setColumnWidth(i, round(sectionSizes[i]*1.2))
 
     def eventFilter(self, source, event):
+        """Checks if the right mouse button is pressed over the table, if it is,
+        an menu containg the AddRowToListAction is shown.
+        """
         if event.type() == QEvent.ContextMenu:
             menu = QtWidgets.QMenu()
             menu.addAction(AddRowToListAction(self))
@@ -87,6 +112,10 @@ class TagTable(QTableWidget):
         return super().eventFilter(source, event)
 
     def addRow(self):
+        """Checks if the current number of rows in the TagTable widget is less
+        than 50, if it is, a row is added to the lines table on the server and 
+        an empty row is added to the TagTable widget.
+        """
         if self.rowCount() < 50:
             server = Server()
             server.addLine("", "", "", "", "NULL", self.id)
@@ -105,18 +134,28 @@ class TagTable(QTableWidget):
             error.showMessage(message)
             error.exec_()
     
-    def getTableName(self):
+    def getTableName(self) -> str:
+        """Searchs for a list that has the same id as the TagTable id on the 
+        lists table. Returns the list name.
+        """
         server = Server()
         return server.getListName(self.id)
 
     def save(self):
+        """Sends all changes made in the TagTable to the lines table in the 
+        server.
+        """
         server = Server()
         for item in self.changeItems:
             column = self.colNamesOnSql[item.column()]
             value = item.text() if item.column() != 4 else int(item.text())
             server.updateLine(column, value, item.lineId)
+        self.wasChanged = False
 
     def onItemChanged(self, item):
+        """When a item is changed the TagTableWidgetItem is added to changeItems
+        and the wasChanged is defined as True.
+        """
         self.wasChanged = True
         self.changeItems.append(item) if item not in self.changeItems else None
 

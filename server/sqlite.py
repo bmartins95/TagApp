@@ -2,8 +2,12 @@ import sqlite3
 
 
 class SqliteInterface():
+    """An interface with the sqlite3 package."""
     @staticmethod
-    def createConnection(path):
+    def createConnection(path: str):
+        """Creates a connection with the server, if the request fail, the 
+        function returns a error.
+        """
         connection = None
         try:
             connection = sqlite3.connect(path)
@@ -13,7 +17,8 @@ class SqliteInterface():
         return connection
 
     @staticmethod
-    def executeQuery(connection, query):
+    def executeQuery(connection, query: str):
+        """Send a query to the server."""
         cursor = connection.cursor()
         try:
             cursor.execute(query)
@@ -22,7 +27,8 @@ class SqliteInterface():
             print(f"Error '{e}' occurred")
 
     @staticmethod
-    def executeAndReadQuery(connection, query):
+    def executeAndReadQuery(connection, query: str) -> list:
+        """Send a query to the server and returns the answer."""
         cursor = connection.cursor()
         result = None
         try:
@@ -33,7 +39,8 @@ class SqliteInterface():
             print(f"Error '{e}' occurred")
     
     @staticmethod
-    def executeAndGetHeaders(connection, query):
+    def executeAndGetHeaders(connection, query: str) -> tuple:
+        """Send a query and return the query header, i.e. table columns names."""
         cursor = connection.cursor()
         try:
             cursor.execute(query)

@@ -5,10 +5,11 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtGui import QKeySequence
 
-from .dialog import MyDialog
+from .dialog import Dialog
 from server.server import Server
 
-class CreateProjectDialog(MyDialog):
+class CreateProjectDialog(Dialog):
+    """Opens a dialog that allows projects to be created."""
     def __init__(self):
         super(CreateProjectDialog, self).__init__()
         self.setWindowTitle("Criar Projeto")
@@ -16,6 +17,7 @@ class CreateProjectDialog(MyDialog):
         self.moveToCenter()
         
     def createForm(self):
+        """Creates the form widget the project name and description."""
         self.name = QtWidgets.QLineEdit()
         self.description = QtWidgets.QLineEdit()
 
@@ -32,6 +34,9 @@ class CreateProjectDialog(MyDialog):
         self.formLayout.setLayout(layout)
 
     def accept(self):
+        """If the name is not used by another project and the string is not
+        empty, the function add the project to the database.
+        """
         isNameEmpty = self.name.text().isspace() or not self.name.text()
         if self.checkProjectExist() and not isNameEmpty:
             server = Server()
@@ -48,12 +53,17 @@ class CreateProjectDialog(MyDialog):
             error.showMessage("Este nome já está sendo utilizado!")
             error.exec_()
 
-    def checkProjectExist(self):
+    def checkProjectExist(self) -> bool:
+        """Checks if the name is used by another project."""
         server = Server()
         projects = [project[1] for project in server.getTable("projects")]
         return self.name.text() not in projects
 
-class OpenProjectDialog(MyDialog):
+class OpenProjectDialog(Dialog):
+    """Opens a dialog that allows project to be loaded from the database to the
+    ProjectTree. Receives the openProject function from 
+    interface.window.MainWindow.
+    """
     def __init__(self, openProject):
         super(OpenProjectDialog, self).__init__()
         self.openProject = openProject
@@ -62,6 +72,9 @@ class OpenProjectDialog(MyDialog):
         self.moveToCenter()
     
     def createForm(self):
+        """Creates the form that contains a QComboBox with the names of all the
+        projects currently available in the database.
+        """
         self.projectBox = QtWidgets.QComboBox()
         self.projectBox.addItems(self.projectNames)
         
@@ -71,10 +84,15 @@ class OpenProjectDialog(MyDialog):
         self.formLayout.setLayout(layout)
 
     def accept(self):
+        """Load the project into the ProjectTree."""
         self.close()
         self.openProject(self.projectDict[self.projectBox.currentText()])
 
-class CloseProjectDialog(MyDialog):
+class CloseProjectDialog(Dialog):
+    """Opens a dialog that allows projects to be closed, i.e. removed from the
+    ProjectTree. Receives the function closeProject from 
+    interface.window.MainWindow.
+    """
     def __init__(self, closeProject, getOpenProjectNames):
         self.closeProject = closeProject
         self.getOpenProjectNames = getOpenProjectNames
@@ -84,6 +102,9 @@ class CloseProjectDialog(MyDialog):
         self.moveToCenter()
     
     def createForm(self):
+        """Creates the form that contains a QComboBox with the names of all the
+        projects currently available in the database.
+        """
         self.projectBox = QtWidgets.QComboBox()
         self.projectBox.addItems(self.getOpenProjectNames())
         
@@ -93,12 +114,14 @@ class CloseProjectDialog(MyDialog):
         self.formLayout.setLayout(layout)
 
     def accept(self):
+        """Closes the project, i.e. removes it from the ProjectTree."""
         self.close()
         isEmpty = not self.projectBox.currentText() 
         if not isEmpty:
             self.closeProject(self.projectDict[self.projectBox.currentText()])
 
 class CreateProjectAction(QAction):
+    """Executes the CreateProjectDialog."""
     def __init__(self, parent, name="Criar projeto"):
         super(CreateProjectAction, self).__init__( 
             QIcon("./interface/shortcuts/icons/create_project.png"), 
@@ -111,6 +134,7 @@ class CreateProjectAction(QAction):
         dialog.exec_()
 
 class OpenProjectAction(QAction):
+    """Executes the OpenProjectDialog."""
     def __init__(self, parent, name="Abrir projeto"):
         super(OpenProjectAction, self).__init__( 
             QIcon("./interface/shortcuts/icons/open_project.png"), 
@@ -124,6 +148,8 @@ class OpenProjectAction(QAction):
         dialog.exec_()
 
 class CloseProjectAction(QAction):
+    """Executes the CloseProjectDialog. Sends closeProject function and 
+    getOpenProjectNames to the CloseProjectDialog class."""
     def __init__(self, parent, getOpenProjectNames, name="Fecha projeto"):
         super(CloseProjectAction, self).__init__( 
             QIcon(""), 

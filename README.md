@@ -11,6 +11,18 @@ Para que o aplicativo possa ser executado as seguintes dependências serão nece
 
 Para evitar possíveis problemas, sugere-se utilizar as mesma versões citadas acima.
 
+## Organização do código
+
+Uma explicação geral da organização do código:
+
+    .
+    ├── figures          # Contém as figuras para ilustrar o readme
+    ├── interface        # Janelas, menus, isto é, todas as estruturas da interface
+    │   ├── menu         # Implementação da classe que cria a barra de menus
+    │   └── shortcuts    # Implementação da barra de atalhos, e.g. ações e janelas de diálogo
+    │       └── icons    # Icones dos atalhos
+    └── server           # Interface com a sqlite3 e implementação do servidor
+
 ## Executando o aplicativo
 
 Antes de executar o aplicativo rode o script **create_database.py** para adicionar alguns dados iniciais no banco de dados:

@@ -6,9 +6,12 @@ from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtGui import QKeySequence
 
 from server.server import Server
-from .dialog import MyDialog
+from .dialog import Dialog
 
-class CreateListDialog(MyDialog):
+class CreateListDialog(Dialog):
+    """Opens a dialog that allow lists to be created. Receives the updateTree
+    function from interface.tree.ProjectTree.
+    """
     def __init__(self, updateTree):
         super(CreateListDialog, self).__init__()
         self.updateTree = updateTree
@@ -17,6 +20,10 @@ class CreateListDialog(MyDialog):
         self.moveToCenter()   
     
     def createForm(self):
+        """Creates a form widget named formLayout. The form contains a 
+        QComboBox that show the name of the projects currently available on the
+        database and am QLineEdit that receives the list name.
+        """
         self.projectBox = QtWidgets.QComboBox()
         self.projectBox.addItems(self.projectNames)
   
@@ -33,6 +40,12 @@ class CreateListDialog(MyDialog):
         self.formLayout.setLayout(layout)
 
     def accept(self):
+        """
+        Add the list to the lists table on the database. Add a empty line to the
+        list in the table lines of the database. Checks if the name is used or 
+        if the name is an empty string.Updates the tree interface with the new 
+        list, if the project is open.
+        """
         self.close()
         isNameUsed =  self.checkListNameIsUsed()
         isNameEmpty = self.name.text().isspace() or not self.name.text()
@@ -56,6 +69,9 @@ class CreateListDialog(MyDialog):
             error.exec_()
 
     def checkListNameIsUsed(self):
+        """Checks if the project has a list with the same name used in the 
+        form.
+        """
         server = Server()
         listName = self.name.text()
         projectId = self.projectDict[self.projectBox.currentText()]
@@ -63,6 +79,7 @@ class CreateListDialog(MyDialog):
         return id > 0
 
 class CreateListAction(QAction):
+    """Opens the CreateListDialog."""
     def __init__(self, parent, updateTree):
         super(CreateListAction, self).__init__( 
             QIcon("./interface/shortcuts/icons/create_list.png"), 
@@ -76,6 +93,7 @@ class CreateListAction(QAction):
         dialog.exec_()
 
 class SaveListAction(QAction):
+    """Calls the saveList function defined in interface.tab.Tab."""
     def __init__(self, parent, saveList, name="Salvar lista"):
         super(SaveListAction, self).__init__( 
             QIcon("./interface/shortcuts/icons/save_list.png"), 
@@ -85,6 +103,7 @@ class SaveListAction(QAction):
         self.triggered.connect(saveList)
 
 class SaveAllListsAction(QAction):
+    """Calls the saveAllLists function defined in interface.tab.Tab."""
     def __init__(self, parent, saveAllLists, name="Salvar todas as listas"):
         super(SaveAllListsAction, self).__init__( 
             QIcon("./interface/shortcuts/icons/save_all.png"), 
@@ -93,6 +112,7 @@ class SaveAllListsAction(QAction):
         self.triggered.connect(saveAllLists)
 
 class AddRowToListAction(QAction):
+    """Calls the addRow function defined in interface.table.TagTable."""
     def __init__(self, parent, name="Adicionar linha"):
         super(AddRowToListAction, self).__init__( 
             QIcon("./interface/shortcuts/icons/add_row.png"), 

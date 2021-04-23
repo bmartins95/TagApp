@@ -9,6 +9,7 @@ from .shortcuts.list import CreateListAction, SaveListAction, SaveAllListsAction
 
 
 class MainWindow(QtWidgets.QMainWindow):
+    """Creates a window with a MenuBar, Shortcuts, Tab and a ProjectTree."""
     def __init__(self, QApplication):
         super(MainWindow, self).__init__()
         self.setResolution(QApplication)
@@ -19,12 +20,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.createMenuBar()
 
     def setResolution(self, QApplication):
+        """Sets the resolution to the screen max resolution."""
         screenResolution = QApplication.desktop().screenGeometry()
         self.width = screenResolution.width()
         self.height = screenResolution.height()
         self.setGeometry(0, 0, self.width, self.height)
 
     def createCentralWidget(self):
+        """Creates the CentralWidget using the ProjectTree widget and the 
+        TabWidget.
+        """
         self.tree = ProjectTree()
         self.tabs = Tab()
 
@@ -39,6 +44,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(centralWidget)
     
     def createToolBar(self):
+        """Creates a ToolBar and adds some shortcuts."""
         self.toolbar = self.addToolBar('Atalhos')
         self.toolbar.addAction(OpenProjectAction(self))
         self.toolbar.addAction(CreateProjectAction(self))
@@ -47,10 +53,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.toolbar.addAction(SaveAllListsAction(self, self.tabs.saveAllLists))
     
     def createMenuBar(self):
+        """Builds the MenuBar defined in interface.menu.MenuBar."""
         menu = MenuBar(self)    
         self.setMenuBar(menu)
     
-    def openList(self, listId):        
+    def openList(self, listId):
+        """If the list is not already open, the function builds the TagTable 
+        widget and adds it to the Tab widget.
+        """        
         if listId not in self.tabs.openListIds:
             self.tabs.openListIds.append(listId)
             tableWidget = TagTable(listId)
@@ -58,11 +68,15 @@ class MainWindow(QtWidgets.QMainWindow):
             self.tabs.addTab(tableWidget, tableName)
     
     def openProject(self, projectId):
+        """If the project is not already ipen the function adds it to the 
+        ProjectTree widget.
+        """
         if projectId not in self.tree.projectIds.values():
             self.tree.addTree(projectId)
             self.tree.addBranches(projectId)
             self.tree.setOpenListFunction(self.openList)
 
     def closeProject(self, projectId):
+        """Removes the project from the ProjectTree."""
         self.tree.removeBranches(projectId)
         self.tree.removeTree(projectId)       
