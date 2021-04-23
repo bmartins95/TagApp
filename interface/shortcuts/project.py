@@ -86,7 +86,10 @@ class OpenProjectDialog(Dialog):
     def accept(self):
         """Load the project into the ProjectTree."""
         self.close()
-        self.openProject(self.projectDict[self.projectBox.currentText()])
+        isNotNone = self.projectBox.currentText() is not None
+        isNotEmpty = self.projectBox.currentText()
+        if isNotNone and isNotEmpty:
+            self.openProject(self.projectDict[self.projectBox.currentText()])
 
 class CloseProjectDialog(Dialog):
     """Opens a dialog that allows projects to be closed, i.e. removed from the

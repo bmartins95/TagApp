@@ -47,6 +47,11 @@ class CreateListDialog(Dialog):
         list, if the project is open.
         """
         self.close()
+        
+        isProjectEmpty = not self.projectBox.currentText()
+        if isProjectEmpty:
+            return -1
+
         isNameUsed =  self.checkListNameIsUsed()
         isNameEmpty = self.name.text().isspace() or not self.name.text()
         if not isNameUsed and not isNameEmpty:
